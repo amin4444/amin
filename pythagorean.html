@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاسبه فیثاغورس | محمدامین فتاحی - عرشیا بیات - مهدی کریمی</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for better Persian display */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center border-b-4 border-blue-500">
+        <h1 class="text-3xl font-bold text-blue-700 mb-6">
+            محاسبه فیثاغورس
+        </h1>
+        <p class="text-sm text-gray-600 mb-8">
+            محمدامین فتاحی - عرشیا بیات - مهدی کریمی
+        </p>
+
+        <div class="space-y-4 mb-6">
+            <div>
+                <label for="sideA" class="block text-right text-gray-700 text-sm font-medium mb-1">
+                    ضلع a:
+                </label>
+                <input type="number" id="sideA" placeholder="مقدار ضلع a"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
+            </div>
+            <div>
+                <label for="sideB" class="block text-right text-gray-700 text-sm font-medium mb-1">
+                    ضلع b:
+                </label>
+                <input type="number" id="sideB" placeholder="مقدار ضلع b"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
+            </div>
+            <div>
+                <label for="sideC" class="block text-right text-gray-700 text-sm font-medium mb-1">
+                    ضلع c (وتر):
+                </label>
+                <input type="number" id="sideC" placeholder="مقدار وتر c"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
+            </div>
+        </div>
+
+        <button id="calculateBtn"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+            محاسبه
+        </button>
+
+        <div id="resultDisplay" class="mt-8 p-4 bg-blue-50 rounded-lg text-blue-800 font-semibold text-lg border border-blue-200 min-h-[50px] flex items-center justify-center">
+            نتیجه اینجا نمایش داده می‌شود.
+        </div>
+
+        <div id="messageBox" class="mt-4 p-3 bg-red-100 text-red-700 rounded-lg hidden text-sm">
+            </div>
+    </div>
+
+    <script>
+        // Get references to HTML elements
+        const sideAInput = document.getElementById('sideA');
+        const sideBInput = document.getElementById('sideB');
+        const sideCInput = document.getElementById('sideC');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultDisplay = document.getElementById('resultDisplay');
+        const messageBox = document.getElementById('messageBox');
+
+        // Function to display messages (errors or warnings)
+        function showMessage(message, type = 'error') {
+            messageBox.textContent = message;
+            messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-yellow-100', 'text-yellow-700');
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-100', 'text-red-700');
+            } else if (type === 'warning') {
+                messageBox.classList.add('bg-yellow-100', 'text-yellow-700');
+            }
+        }
+
+        // Function to clear messages
+        function clearMessage() {
+            messageBox.classList.add('hidden');
+            messageBox.textContent = '';
+        }
+
+        // Main calculation function
+        calculateBtn.addEventListener('click', () => {
+            clearMessage(); // Clear previous messages
+
+            // Get values from input fields, converting empty strings to 0
+            const a = parseFloat(sideAInput.value) || 0;
+            const b = parseFloat(sideBInput.value) || 0;
+            const c = parseFloat(sideCInput.value) || 0;
+
+            // Count how many sides are known (non-zero)
+            const knownSides = [a, b, c].filter(val => val > 0).length;
+
+            let result = 0;
+            let resultText = "";
+
+            if (knownSides !== 2) {
+                showMessage("لطفاً دقیقاً دو ضلع را وارد کنید و ضلع نامعلوم را خالی بگذارید یا 0 وارد کنید.", 'warning');
+                resultDisplay.textContent = "نتیجه اینجا نمایش داده می‌شود.";
+                return;
+            }
+
+            try {
+                if (a === 0) { // Calculate side 'a'
+                    if (c <= b) {
+                        showMessage("خطا: وتر (c) نمی‌تواند کوچکتر یا مساوی با ضلع دیگر (b) باشد.", 'error');
+                        return;
+                    }
+                    const aSquared = c * c - b * b;
+                    if (aSquared < 0) {
+                        showMessage("خطا: مقادیر وارد شده برای b و c معتبر نیستند. (b² از c² بزرگتر است)", 'error');
+                        return;
+                    }
+                    result = Math.sqrt(aSquared);
+                    resultText = `ضلع a برابر است با: ${result.toFixed(2)}`;
+                } else if (b === 0) { // Calculate side 'b'
+                    if (c <= a) {
+                        showMessage("خطا: وتر (c) نمی‌تواند کوچکتر یا مساوی با ضلع دیگر (a) باشد.", 'error');
+                        return;
+                    }
+                    const bSquared = c * c - a * a;
+                    if (bSquared < 0) {
+                        showMessage("خطا: مقادیر وارد شده برای a و c معتبر نیستند. (a² از c² بزرگتر است)", 'error');
+                        return;
+                    }
+                    result = Math.sqrt(bSquared);
+                    resultText = `ضلع b برابر است با: ${result.toFixed(2)}`;
+                } else if (c === 0) { // Calculate side 'c' (hypotenuse)
+                    result = Math.sqrt(a * a + b * b);
+                    resultText = `وتر c برابر است با: ${result.toFixed(2)}`;
+                }
+
+                resultDisplay.textContent = resultText;
+
+            } catch (error) {
+                showMessage(`خطایی در محاسبه رخ داد: ${error.message}`, 'error');
+                resultDisplay.textContent = "نتیجه اینجا نمایش داده می‌شود.";
+            }
+        });
+    </script>
+</body>
+</html>
